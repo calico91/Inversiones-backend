@@ -41,10 +41,11 @@ public class PermisoService {
                 new Permiso(204, "Creditos/modificar fecha pago", "modificar-fecha-pago"),
                 new Permiso(205, "Creditos/consultar informacion de credito", "consultar-credito-saldo"),
                 new Permiso(206, "Creditos/consultar abonos realizados", "consultar-abonos-realizados"),
-                new Permiso(206, "Creditos/anular ultimo abono", "anular-ultimo-abono"),
                 new Permiso(207, "Creditos/saldarCredito", "saldar-credito"),
                 new Permiso(208, "Creditos/abonar interes, capital o pagar cuota", "pagar-cuota"),
                 new Permiso(209, "Creditos/consultar abono realizado", "consultar-abono-por-id"),
+                new Permiso(210, "Creditos/anular ultimo abono", "anular-ultimo-abono"),
+
 
                 new Permiso(301, "Inicio/consultar cuota cliente", "consultar-cuota-cliente"),
                 new Permiso(302, "Inicio/consultar cuotas pendientes", "consultar-cuotas-por-fecha")

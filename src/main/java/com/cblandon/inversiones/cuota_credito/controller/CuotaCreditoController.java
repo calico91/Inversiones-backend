@@ -61,7 +61,7 @@ public class CuotaCreditoController {
     }
 
     @PutMapping("/anular-ultimo-abono/{idAbono}/{idCredito}")
-    @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(206))")
+    @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(210))")
     public ResponseEntity<GenericResponseDTO> anularUltimoAbono(
             @PathVariable int idAbono, @PathVariable int idCredito) {
         return GenericResponseDTO.genericResponse(cuotaCreditoService.anularUltimoAbono(idAbono, idCredito));
