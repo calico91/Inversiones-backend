@@ -16,9 +16,9 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
   datasource:
-    password: sasa
+    password: admin
     url: jdbc:mysql://localhost:3306/blandon
-    username: local
+    username: root
   #zona horaria
   jackson:
     time-zone: America/Bogota
