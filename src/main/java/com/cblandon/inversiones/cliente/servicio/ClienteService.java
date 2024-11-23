@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ClienteService {
 
 
     @Transactional
-    public ClienteResponseDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO) {
+    public ClienteResponseDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO, List<MultipartFile> imagenes) {
 
         if (clienteRepository.findByCedula(registrarClienteDTO.cedula()).isPresent()) {
             throw new RequestException(

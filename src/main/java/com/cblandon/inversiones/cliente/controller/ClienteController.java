@@ -3,14 +3,18 @@ package com.cblandon.inversiones.cliente.controller;
 import com.cblandon.inversiones.cliente.servicio.ClienteService;
 import com.cblandon.inversiones.cliente.dto.RegistrarClienteDTO;
 import com.cblandon.inversiones.utils.dto.GenericResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +23,18 @@ public class ClienteController {
 
     private final ClienteService clienteService;
 
+
     @PostMapping("/registrar-cliente")
     @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(101))")
     public ResponseEntity<GenericResponseDTO> registrarCliente(
-            @RequestBody @Valid RegistrarClienteDTO registrarClienteDTO) {
+            @RequestPart("cliente") String clienteJson,  // Recibimos el JSON como String
+            @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws JsonProcessingException {
+        // Convertir el String JSON en el objeto DTO
+        ObjectMapper objectMapper = new ObjectMapper();
+        RegistrarClienteDTO registrarClienteDTO = objectMapper.readValue(clienteJson, RegistrarClienteDTO.class);
 
-        return GenericResponseDTO.genericResponse(clienteService.registrarCliente(registrarClienteDTO));
-
+        // Procesar la lógica con registrarClienteDTO y las imágenes
+        return GenericResponseDTO.genericResponse(clienteService.registrarCliente(registrarClienteDTO, imagenes));
     }
 
     @GetMapping("/consultar-clientes")

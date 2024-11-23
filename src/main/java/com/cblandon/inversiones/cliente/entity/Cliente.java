@@ -2,6 +2,7 @@ package com.cblandon.inversiones.cliente.entity;
 
 
 import com.cblandon.inversiones.credito.entity.Credito;
+import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,6 +52,9 @@ public class Cliente {
 
     @OneToMany(targetEntity = Credito.class, fetch = FetchType.LAZY, mappedBy = "cliente")
     private List<Credito> listaCreditos;
+
+    @OneToMany(targetEntity = ImagenCliente.class, fetch = FetchType.LAZY, mappedBy = "cliente")
+    private List<ImagenCliente> imagenes;
 
     @PrePersist
     public void prePersit() {
