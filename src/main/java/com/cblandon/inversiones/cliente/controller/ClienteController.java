@@ -5,7 +5,9 @@ import com.cblandon.inversiones.cliente.dto.RegistrarClienteDTO;
 import com.cblandon.inversiones.utils.dto.GenericResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import java.util.List;
 public class ClienteController {
 
     private final ClienteService clienteService;
+    private final Validator validator;
 
 
     @PostMapping("/registrar-cliente")
@@ -29,11 +33,20 @@ public class ClienteController {
     public ResponseEntity<GenericResponseDTO> registrarCliente(
             @RequestPart("cliente") String clienteJson,  // Recibimos el JSON como String
             @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws JsonProcessingException {
-        // Convertir el String JSON en el objeto DTO
+
         ObjectMapper objectMapper = new ObjectMapper();
         RegistrarClienteDTO registrarClienteDTO = objectMapper.readValue(clienteJson, RegistrarClienteDTO.class);
 
-        // Procesar la lógica con registrarClienteDTO y las imágenes
+        // Validar manualmente despues de convertir el string a objeto
+        Set<ConstraintViolation<RegistrarClienteDTO>> violations = validator.validate(registrarClienteDTO);
+        if (!violations.isEmpty()) {
+            String errores = violations.stream()
+                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                    .reduce((e1, e2) -> e1 + ", " + e2)
+                    .orElse("Error de validación");
+            return GenericResponseDTO.formResponseError(errores, HttpStatus.NOT_FOUND);
+        }
+
         return GenericResponseDTO.genericResponse(clienteService.registrarCliente(registrarClienteDTO, imagenes));
     }
 

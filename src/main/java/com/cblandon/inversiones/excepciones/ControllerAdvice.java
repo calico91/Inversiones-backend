@@ -20,7 +20,9 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<GenericResponseDTO> exception() {
         return GenericResponseDTO.genericError(
                 MensajesErrorEnum.ERROR_NO_CONTROLADO, HttpStatus.BAD_REQUEST);
-    }  @ExceptionHandler(value = RequestException.class)
+    }
+
+    @ExceptionHandler(value = RequestException.class)
     public ResponseEntity<GenericResponseDTO> requestException(RequestException ex) {
         return GenericResponseDTO.genericError(
                 ex.getMensajesErrorEnum(), HttpStatus.BAD_REQUEST);

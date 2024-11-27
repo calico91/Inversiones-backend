@@ -27,6 +27,7 @@ public class Constantes {
     public static final int ID_CREDITO_ACTIVO = 1;
     public static final int ID_CREDITO_PAGADO = 2;
     public static final String NO_TOKEN = "Bearer notoken";
+    public static final String INFORMACION_FORMULARIO_ERRONEA = "informacion erronea";
 
 
 }
