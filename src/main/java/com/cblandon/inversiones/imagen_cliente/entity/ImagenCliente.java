@@ -19,6 +19,9 @@ public class ImagenCliente {
     @Column(length = 100)
     private String descripcion;
 
+    @Column(length = 20)
+    private String extension;
+
     @Lob // Indica que es un campo grande
     @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String base64;

@@ -8,6 +8,8 @@ import com.cblandon.inversiones.cliente.entity.Cliente;
 import com.cblandon.inversiones.cliente.repository.ClienteRepository;
 import com.cblandon.inversiones.excepciones.NoDataException;
 import com.cblandon.inversiones.excepciones.RequestException;
+import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
+import com.cblandon.inversiones.imagen_cliente.servicio.ImagenClienteService;
 import com.cblandon.inversiones.mapper.Mapper;
 import com.cblandon.inversiones.utils.MensajesErrorEnum;
 import com.cblandon.inversiones.utils.UtilsMetodos;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,7 +29,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ClienteService {
 
-    final ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+    private final ImagenClienteService imagenClienteService;
 
 
     @Transactional
@@ -40,9 +44,15 @@ public class ClienteService {
             Cliente cliente = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             cliente.setUsuariocreador(UtilsMetodos.obtenerUsuarioLogueado());
 
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes);
+            for (ImagenCliente imagen : imagenesProcesadas) {
+                imagen.setCliente(cliente); // Relación bidireccional
+            }
+            cliente.setImagenes(imagenesProcesadas);
+
             return Mapper.mapper.clienteToClienteResponseDto(clienteRepository.save(cliente));
 
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException | IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
 

@@ -53,7 +53,7 @@ public class Cliente {
     @OneToMany(targetEntity = Credito.class, fetch = FetchType.LAZY, mappedBy = "cliente")
     private List<Credito> listaCreditos;
 
-    @OneToMany(targetEntity = ImagenCliente.class, fetch = FetchType.LAZY, mappedBy = "cliente")
+    @OneToMany(targetEntity = ImagenCliente.class, fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<ImagenCliente> imagenes;
 
     @PrePersist
