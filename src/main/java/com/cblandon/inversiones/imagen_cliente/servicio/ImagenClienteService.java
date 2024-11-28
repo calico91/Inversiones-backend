@@ -1,10 +1,14 @@
 package com.cblandon.inversiones.imagen_cliente.servicio;
 
+import com.cblandon.inversiones.excepciones.NoDataException;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
+import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.util.MultipartFileCustom;
+import com.cblandon.inversiones.utils.MensajesErrorEnum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -20,6 +24,26 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class ImagenClienteService {
+
+    private final ImagenClienteRepository imagenClienteRepository;
+
+    @Transactional(readOnly = true)
+    public List<byte[]> obtenerImagenes(Integer clienteId) {
+
+        List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(clienteId);
+
+        if (imagenes.isEmpty()) {
+            throw new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS);
+        }
+
+        List<byte[]> imagenesDecodificadas = new ArrayList<>();
+        for (ImagenCliente imagen : imagenes) {
+            byte[] decodedImage = decodeBase64(imagen.getBase64());
+            imagenesDecodificadas.add(decodedImage);
+        }
+
+        return imagenesDecodificadas;
+    }
 
     public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes) throws IOException {
 
@@ -72,6 +96,10 @@ public class ImagenClienteService {
             return filename.substring(filename.lastIndexOf(".") + 1);  // Extraer la extensión
         }
         return "";
+    }
+
+    private byte[] decodeBase64(String base64) {
+        return Base64.getDecoder().decode(base64);
     }
 
 }
