@@ -44,6 +44,8 @@ public class CuotasCreditoResponseDTO {
 
     private LocalDate fechaProximaMora;
 
+    private  Double saldoCredito;
+
 }
 
 

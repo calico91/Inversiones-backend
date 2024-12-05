@@ -52,6 +52,11 @@ public class CuotaCreditoService {
         CuotaCredito cuotaCreditoDB = cuotaCreditoRepository.findById(codigoCuota)
                 .orElseThrow(() -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
 
+        // se realiza calculo para mostrar el numero de cuotas calculado del valor del credito por el saldo
+        // por si se han hecho abonos a capital
+        cuotaCreditoDB.setCuotaNumero(UtilsMetodos.calcularCuotasPagadas(cuotaCreditoDB.getCredito().getValorCredito(),
+                cuotaCreditoDB.getCredito().getSaldoCredito(), cuotaCreditoDB.getNumeroCuotas()) + 1);
+
         validarEstadoCuotaYCredito(cuotaCreditoDB.getValorAbonado(),
                 cuotaCreditoDB.getCredito().getIdEstadoCredito().getId());
 
@@ -197,6 +202,7 @@ public class CuotaCreditoService {
                     .cuotaNumero(Integer.parseInt(infoConsulta.get("couta_numero").toString()))
                     .valorCredito(Double.parseDouble(infoConsulta.get("valor_credito").toString()))
                     .modalidad(infoConsulta.get("description").toString())
+                    .saldoCredito(Double.parseDouble(infoConsulta.get("saldo_credito").toString()))
                     .build();
 
 
@@ -204,6 +210,8 @@ public class CuotaCreditoService {
 
             infoCuotaPagar.setInteresMora(interesMora);
             infoCuotaPagar.setValorInteres(infoCuotaPagar.getValorInteres() + interesMora);
+            infoCuotaPagar.setCuotaNumero(UtilsMetodos.calcularCuotasPagadas(infoCuotaPagar.getValorCredito(),
+                    infoCuotaPagar.getSaldoCredito(), infoCuotaPagar.getNumeroCuotas()) + 1);
 
             infoCuotaPagar.setValorCapital(
                     infoCuotaPagar.getValorCredito() / infoCuotaPagar.getNumeroCuotas());
@@ -219,6 +227,7 @@ public class CuotaCreditoService {
 
 
         } catch (RuntimeException ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
 
