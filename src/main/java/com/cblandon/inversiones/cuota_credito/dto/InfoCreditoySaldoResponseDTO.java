@@ -14,12 +14,14 @@ public class InfoCreditoySaldoResponseDTO {
 
 
     private Integer id;
+
     private Double valorCuota;
 
     private LocalDate fechaCuota;
-    private Integer numeroCuotas;
-    private Integer cuotaNumero;
 
+    private Integer numeroCuotas;
+
+    private Integer cuotaNumero;
 
     private Double valorInteres;
 
@@ -32,12 +34,19 @@ public class InfoCreditoySaldoResponseDTO {
     private Double interesHoy;
 
     private Double saldoCredito;
+
     private Double capitalPagado;
+
     private String ultimaCuotaPagada;
+
     private String tipoAbono;
+
     private Boolean abonoExtra;
+
     private double abonoExtraPagado;
+
     private double interesMora;
+
     private String modalidad;
 
 
