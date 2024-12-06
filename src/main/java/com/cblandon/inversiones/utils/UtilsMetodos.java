@@ -22,6 +22,10 @@ public class UtilsMetodos {
 
     public static int calcularCuotasPagadas(double valorCredito, double saldoCredito, int numeroCuotas) {
         double cuotasPagadas = ((valorCredito - saldoCredito) / (valorCredito / numeroCuotas));
+
+        if (cuotasPagadas - Math.floor(cuotasPagadas) >= 0.9) {
+            return (int) Math.ceil(cuotasPagadas);
+        }
         return (int) Math.floor(cuotasPagadas);
     }
 
