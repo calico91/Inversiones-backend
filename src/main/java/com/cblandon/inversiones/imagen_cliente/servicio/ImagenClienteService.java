@@ -1,6 +1,10 @@
 package com.cblandon.inversiones.imagen_cliente.servicio;
 
+import com.cblandon.inversiones.cliente.entity.Cliente;
+import com.cblandon.inversiones.cliente.repository.ClienteRepository;
 import com.cblandon.inversiones.excepciones.NoDataException;
+import com.cblandon.inversiones.excepciones.RequestException;
+import com.cblandon.inversiones.imagen_cliente.dto.ImagenDTO;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
 import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.util.MultipartFileCustom;
@@ -13,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Base64;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -26,9 +31,10 @@ import java.util.List;
 public class ImagenClienteService {
 
     private final ImagenClienteRepository imagenClienteRepository;
+    private final ClienteRepository clienteRepository;
 
     @Transactional(readOnly = true)
-    public List<byte[]> obtenerImagenes(Integer clienteId) {
+    public List<ImagenDTO> obtenerImagenes(Integer clienteId) {
 
         List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(clienteId);
 
@@ -36,27 +42,56 @@ public class ImagenClienteService {
             throw new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS);
         }
 
-        List<byte[]> imagenesDecodificadas = new ArrayList<>();
+        List<ImagenDTO> imagenesDecodificadas = new ArrayList<>();
         for (ImagenCliente imagen : imagenes) {
-            byte[] decodedImage = decodeBase64(imagen.getBase64());
-            imagenesDecodificadas.add(decodedImage);
+            byte[] decodedImage = decodeBase64(imagen.getBase64Data());
+            ImagenDTO dto = new ImagenDTO(decodedImage, imagen.getExtension());
+
+            imagenesDecodificadas.add(dto);
         }
 
         return imagenesDecodificadas;
     }
 
-    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes) throws IOException {
+    @Transactional
+    public String guardarModificarImagenes(Integer clienteId, List<MultipartFile> imagenes) {
+
+        Cliente cliente = clienteRepository.findById(clienteId).orElseThrow(
+                () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
+
+        try {
+
+            imagenClienteRepository.deleteByClienteId(clienteId);
+            imagenClienteRepository.saveAll(procesarImagenes(imagenes, cliente));
+
+            return "Imagenes almacenadas correctamente";
+
+        } catch (RequestException e) {
+            throw new RequestException(e.getMensajesErrorEnum());
+        } catch (RuntimeException | IOException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+
+    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente)
+            throws IOException, RequestException {
 
         List<ImagenCliente> imagenesCliente = new ArrayList<>();
         if (imagenes != null && !imagenes.isEmpty()) {
             for (MultipartFile imagen : imagenes) {
                 String extension = getExtension(imagen.getOriginalFilename());
+
+                if (!esExtensionValida(extension)) {
+                    throw new RequestException(MensajesErrorEnum.FORMATO_ARCHIVO_INVALIDO);
+                }
                 if (imagen.getSize() > 300 * 1024) { // Si la imagen supera los 300kb
                     imagen = reducirPesoImagen(imagen);
                 }
                 imagenesCliente.add(ImagenCliente.builder()
-                        .base64(convertirABase64(imagen))
+                        .base64Data(convertirABase64(imagen))
                         .extension(extension)
+                        .cliente(cliente)
                         .build());
             }
         }
@@ -100,6 +135,12 @@ public class ImagenClienteService {
 
     private byte[] decodeBase64(String base64) {
         return Base64.getDecoder().decode(base64);
+    }
+
+    // Metodo para validar extensiones permitidas
+    private boolean esExtensionValida(String extension) {
+        List<String> extensionesPermitidas = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp");
+        return extensionesPermitidas.contains(extension);
     }
 
 }

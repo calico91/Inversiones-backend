@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +26,14 @@ public class ImagenClienteController {
             @PathVariable("id-cliente") Integer idCliente
     ) {
         return GenericResponseDTO.genericResponse(imagenClienteService.obtenerImagenes(idCliente));
+    }
+
+    @PutMapping("/guardar-modificar-imagenes/{id-cliente}")
+    @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(106))")
+    public ResponseEntity<GenericResponseDTO> registrarCliente(
+            @PathVariable("id-cliente") Integer clienteId,
+            @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) {
+        return GenericResponseDTO.genericResponse(imagenClienteService.guardarModificarImagenes(clienteId, imagenes));
     }
 
 }

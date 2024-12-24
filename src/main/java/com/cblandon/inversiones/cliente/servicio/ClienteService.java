@@ -44,14 +44,13 @@ public class ClienteService {
             Cliente cliente = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             cliente.setUsuariocreador(UtilsMetodos.obtenerUsuarioLogueado());
 
-            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes);
-            for (ImagenCliente imagen : imagenesProcesadas) {
-                imagen.setCliente(cliente); // Relación bidireccional
-            }
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes, cliente);
             cliente.setImagenes(imagenesProcesadas);
 
             return Mapper.mapper.clienteToClienteResponseDto(clienteRepository.save(cliente));
 
+        } catch (RequestException e) {
+            throw new RequestException(e.getMensajesErrorEnum());
         } catch (RuntimeException | IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }

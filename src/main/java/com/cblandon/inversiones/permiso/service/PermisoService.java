@@ -33,6 +33,7 @@ public class PermisoService {
                 new Permiso(103, "Clientes/consultar clientes por cedula", "consultar-cliente-por-cedula"),
                 new Permiso(104, "Clientes/actualizar clientes", "actualizar-cliente"),
                 new Permiso(105, "Clientes/consultar imagenes ", "consultar-imagenes-por-id-cliente"),
+                new Permiso(106, "Clientes/guardar modificar imagenes", "guardar-modificar-imagenes"),
 
 
                 new Permiso(201, "Creditos/crear o renovar credito", "registrar-credito"),
@@ -49,7 +50,6 @@ public class PermisoService {
 
                 new Permiso(301, "Inicio/consultar cuota cliente", "consultar-cuota-cliente"),
                 new Permiso(302, "Inicio/consultar cuotas pendientes", "consultar-cuotas-por-fecha")
-
 
 
         ));
