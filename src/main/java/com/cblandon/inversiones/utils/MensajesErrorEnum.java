@@ -39,7 +39,8 @@ public enum MensajesErrorEnum {
     ERROR_SALDAR_CREDITO("El valor ingresado es menor al saldo capital del credito", "E26"),
     ERROR_PAGAR_CUOTA_NORMAL("El valor a abonar no puede ser menor al valor capital de la cuota", "E27"),
     FORMATO_ARCHIVO_INVALIDO("Solo puede guardar imagenes con este tipo de extension jpg, jpeg, png, gif, bmp",
-            "E27");
+            "E27"),
+    CANTIDAD_IMAGENES_NO_VALIDA("Solo puede guardar 6 imagenes por cliente ", "E27");
 
 
     private final String message;

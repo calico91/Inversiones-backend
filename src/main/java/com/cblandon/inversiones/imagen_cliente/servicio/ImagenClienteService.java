@@ -77,6 +77,10 @@ public class ImagenClienteService {
     public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente)
             throws IOException, RequestException {
 
+        if (imagenes != null && imagenes.size() > 6) {
+            throw new RequestException(MensajesErrorEnum.CANTIDAD_IMAGENES_NO_VALIDA);
+        }
+        
         List<ImagenCliente> imagenesCliente = new ArrayList<>();
         if (imagenes != null && !imagenes.isEmpty()) {
             for (MultipartFile imagen : imagenes) {
