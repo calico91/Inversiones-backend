@@ -29,8 +29,8 @@ public class ReporteService {
     public ReporteInteresCapitalDTO generarReporteInteresCapital(String fechaInicial, String fechaFinal) {
         try {
 
-            return cuotaCreditoRepository
-                    .generarReporteInteresyCapital(convertirFechas(fechaInicial), convertirFechas(fechaFinal));
+            return cuotaCreditoRepository.generarReporteInteresyCapital(
+                    convertirFechas(fechaInicial, false), convertirFechas(fechaFinal, true));
 
 
         } catch (RuntimeException ex) {
@@ -57,7 +57,6 @@ public class ReporteService {
                             .build()).toList();
 
 
-
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
         }
@@ -67,8 +66,11 @@ public class ReporteService {
      * convierte las fechas de string a datetime ya que al realizar consulta con JPQL y enviar las fechas como string
      * genera error
      */
-    private LocalDateTime convertirFechas(String fecha) {
+    private LocalDateTime convertirFechas(String fecha, boolean esFechaFinal) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(fecha, formatter).atStartOfDay();
+        LocalDate localDate = LocalDate.parse(fecha, formatter);
+
+        return esFechaFinal ? localDate.atTime(23, 59, 59) : localDate.atStartOfDay();
+
     }
 }
