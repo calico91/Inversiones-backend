@@ -67,8 +67,8 @@ public class ReporteService {
      * genera error
      */
     private LocalDateTime convertirFechas(String fecha, boolean esFechaFinal) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate localDate = LocalDate.parse(fecha, formatter);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final LocalDate localDate = LocalDate.parse(fecha, formatter);
 
         return esFechaFinal ? localDate.atTime(23, 59, 59) : localDate.atStartOfDay();
 
