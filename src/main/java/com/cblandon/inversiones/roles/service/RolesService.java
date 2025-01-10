@@ -5,7 +5,6 @@ import com.cblandon.inversiones.excepciones.RequestException;
 import com.cblandon.inversiones.mapper.RolesMapper;
 import com.cblandon.inversiones.permiso.entity.Permiso;
 import com.cblandon.inversiones.permiso.repository.PermisoRepository;
-import com.cblandon.inversiones.roles.Role;
 import com.cblandon.inversiones.roles.dto.AsignarPermisosDTO;
 import com.cblandon.inversiones.roles.dto.RolesDTO;
 import com.cblandon.inversiones.roles.entity.Roles;

@@ -33,5 +33,17 @@ public class GenericResponseDTO {
         return new ResponseEntity<>(genericErrorDto, httpStatus);
     }
 
+    public static ResponseEntity<GenericResponseDTO> formResponseError(
+            String mensajeError, HttpStatus httpStatus) {
+
+        GenericResponseDTO genericErrorDto = new GenericResponseDTO();
+        genericErrorDto.setData(Constantes.INFORMACION_FORMULARIO_ERRONEA);
+        genericErrorDto.setStatus(httpStatus.value());
+        genericErrorDto.setMessage(mensajeError);
+
+        return new ResponseEntity<>(genericErrorDto, httpStatus);
+
+    }
+
 
 }

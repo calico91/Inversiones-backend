@@ -2,7 +2,6 @@ package com.cblandon.inversiones.permiso.service;
 
 import com.cblandon.inversiones.permiso.entity.Permiso;
 import com.cblandon.inversiones.permiso.repository.PermisoRepository;
-import com.cblandon.inversiones.roles.dto.RolesDTO;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PermisoService {
@@ -34,6 +32,9 @@ public class PermisoService {
                 new Permiso(102, "Clientes/consultar todos los clientes", "consultar-clientes"),
                 new Permiso(103, "Clientes/consultar clientes por cedula", "consultar-cliente-por-cedula"),
                 new Permiso(104, "Clientes/actualizar clientes", "actualizar-cliente"),
+                new Permiso(105, "Clientes/consultar imagenes ", "consultar-imagenes-por-id-cliente"),
+                new Permiso(106, "Clientes/guardar modificar imagenes", "guardar-modificar-imagenes"),
+
 
                 new Permiso(201, "Creditos/crear o renovar credito", "registrar-credito"),
                 new Permiso(202, "Creditos/consultar creditos", "consultar-creditos-activos"),
@@ -49,6 +50,8 @@ public class PermisoService {
 
                 new Permiso(301, "Inicio/consultar cuota cliente", "consultar-cuota-cliente"),
                 new Permiso(302, "Inicio/consultar cuotas pendientes", "consultar-cuotas-por-fecha")
+
+
         ));
 
         List<Permiso> permisosActuales = permisoRepository.findAll();

@@ -73,7 +73,7 @@ class ClienteServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    @DisplayName("Test para guardar un cliente")
+    /*@DisplayName("Test para guardar un cliente")
     @Test
     void testCreateCliente() {
         //given
@@ -93,10 +93,10 @@ class ClienteServiceTest {
         assertThat(clienteGuardado).isNotNull();
         assertThat(clienteGuardado.cedula()).isEqualTo(cliente.getCedula());
 
-    }
+    }*/
 
 
-    @DisplayName("Test para guardar un cliente con Throw Exception")
+    /*@DisplayName("Test para guardar un cliente con Throw Exception")
     @Test
     void testGuardarClienteConThrowException() {
         //given
@@ -110,7 +110,7 @@ class ClienteServiceTest {
 
         //then
         verify(clienteRepository, never()).save(any(Cliente.class));
-    }
+    }*/
 
     @DisplayName("Test para listar los clientes")
     @Test

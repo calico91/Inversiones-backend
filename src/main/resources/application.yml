@@ -10,6 +10,12 @@ jwt:
 logging:
   file:
     name: D:/Spring/ProjectoInversion/logs/inversiones.log
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.web.multipart: DEBUG
+    org.springframework.web.servlet: DEBUG
+    org.springframework.http: DEBUG
+    org.springframework: DEBUG
 
 spring:
   liquibase:
@@ -26,9 +32,15 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: validate
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 #Swagger
 springdoc:
   api-docs:
