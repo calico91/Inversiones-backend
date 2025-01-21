@@ -46,6 +46,8 @@ public class CuotasCreditoResponseDTO {
 
     private  Double saldoCredito;
 
+    private String celular;
+
 }
 
 

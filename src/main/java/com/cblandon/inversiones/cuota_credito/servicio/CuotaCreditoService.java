@@ -203,6 +203,7 @@ public class CuotaCreditoService {
                     .valorCredito(Double.parseDouble(infoConsulta.get("valor_credito").toString()))
                     .modalidad(infoConsulta.get("description").toString())
                     .saldoCredito(Double.parseDouble(infoConsulta.get("saldo_credito").toString()))
+                    .celular(infoConsulta.get("celular").toString())
                     .build();
 
 
