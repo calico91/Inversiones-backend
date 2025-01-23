@@ -9,6 +9,7 @@ import com.cblandon.inversiones.cliente.repository.ClienteRepository;
 import com.cblandon.inversiones.excepciones.NoDataException;
 import com.cblandon.inversiones.excepciones.RequestException;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
+import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.servicio.ImagenClienteService;
 import com.cblandon.inversiones.mapper.Mapper;
 import com.cblandon.inversiones.utils.MensajesErrorEnum;
@@ -31,6 +32,7 @@ public class ClienteService {
 
     private final ClienteRepository clienteRepository;
     private final ImagenClienteService imagenClienteService;
+    private final ImagenClienteRepository imagenClienteRepository;
 
 
     @Transactional
@@ -128,7 +130,6 @@ public class ClienteService {
 
     }
 
-
     /**
      * lista de cuotas pendientes de la fecha seleccionada para atras
      */
@@ -141,6 +142,26 @@ public class ClienteService {
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
         }
+
+    }
+
+    @Transactional(readOnly = true)
+    public ClienteResponseDTO consultarClientePorIdImagenes(Integer id) {
+
+        Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
+                () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
+
+        List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(id);
+
+        try {
+            clienteBD.setImagenes(imagenes);
+            return Mapper.mapper.clienteToClienteResponseDto(clienteBD);
+
+        } catch (RuntimeException ex) {
+
+            throw new RuntimeException(ex.getMessage());
+        }
+
 
     }
 }

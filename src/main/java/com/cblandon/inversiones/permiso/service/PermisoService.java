@@ -34,6 +34,7 @@ public class PermisoService {
                 new Permiso(104, "Clientes/actualizar clientes", "actualizar-cliente"),
                 new Permiso(105, "Clientes/consultar imagenes ", "consultar-imagenes-por-id-cliente"),
                 new Permiso(106, "Clientes/guardar modificar imagenes", "guardar-modificar-imagenes"),
+                new Permiso(107, "Clientes/consultar cliente por id e imagenes", "consultar-cliente-por-id-imagenes"),
 
 
                 new Permiso(201, "Creditos/crear o renovar credito", "registrar-credito"),

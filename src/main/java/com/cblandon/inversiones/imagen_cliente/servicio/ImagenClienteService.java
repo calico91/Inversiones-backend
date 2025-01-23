@@ -85,7 +85,7 @@ public class ImagenClienteService {
     }
 
 
-    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente, Boolean estaEditando)
+    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente, boolean estaEditando)
             throws IOException, RequestException {
 
         if (imagenes != null && imagenes.size() > 6) {

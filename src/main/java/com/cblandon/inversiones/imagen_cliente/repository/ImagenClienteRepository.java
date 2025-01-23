@@ -17,4 +17,5 @@ public interface ImagenClienteRepository extends JpaRepository<ImagenCliente, In
     void deleteByClienteId(@Param("clienteId") Integer clienteId);
 
 
+
 }
