@@ -1,7 +1,7 @@
 package com.cblandon.inversiones.cliente.servicio;
 
-import com.cblandon.inversiones.cliente.dto.ClienteAllResponseDTO;
-import com.cblandon.inversiones.cliente.dto.ClienteResponseDTO;
+import com.cblandon.inversiones.cliente.dto.ClientesRespuestaDTO;
+import com.cblandon.inversiones.cliente.dto.ClienteRespuestaDTO;
 import com.cblandon.inversiones.cliente.dto.ClientesCuotaCreditoDTO;
 import com.cblandon.inversiones.cliente.dto.RegistrarClienteDTO;
 import com.cblandon.inversiones.cliente.entity.Cliente;
@@ -16,7 +16,6 @@ import com.cblandon.inversiones.utils.MensajesErrorEnum;
 import com.cblandon.inversiones.utils.UtilsMetodos;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +35,7 @@ public class ClienteService {
 
 
     @Transactional
-    public ClienteResponseDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO, List<MultipartFile> imagenes) {
+    public ClienteRespuestaDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO, List<MultipartFile> imagenes) {
 
         if (clienteRepository.findByCedula(registrarClienteDTO.cedula()).isPresent()) {
             throw new RequestException(
@@ -60,13 +59,10 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClienteAllResponseDTO> allClientes() {
+    public List<ClientesRespuestaDTO> consultarTodos() {
         try {
 
-            List<Cliente> clientes = clienteRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-            return clientes.stream().map(
-                    Mapper.mapper::clienteToClienteAllResponseDto).toList();
+            return clienteRepository.consultarTodos();
 
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
@@ -75,26 +71,15 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClienteResponseDTO consultarCliente(String cedula) {
+    public ClienteRespuestaDTO consultarCliente(String cedula) {
 
-        Cliente clienteBD = clienteRepository.findByCedula(cedula).orElseThrow(
+        return clienteRepository.findByCedula(cedula).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
-
-        try {
-
-            return Mapper.mapper.clienteToClienteResponseDto(clienteBD);
-
-        } catch (RuntimeException ex) {
-
-            throw new RuntimeException(ex.getMessage());
-        }
-
-
     }
 
     @Transactional
-    public ClienteResponseDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO,
-                                                List<MultipartFile> imagenes) {
+    public ClienteRespuestaDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO,
+                                                 List<MultipartFile> imagenes) {
 
         Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
@@ -146,7 +131,7 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClienteResponseDTO consultarClientePorIdImagenes(Integer id) {
+    public ClienteRespuestaDTO consultarClientePorIdImagenes(Integer id) {
 
         Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));

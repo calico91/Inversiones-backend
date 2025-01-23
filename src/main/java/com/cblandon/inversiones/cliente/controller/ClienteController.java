@@ -47,7 +47,7 @@ public class ClienteController {
     @GetMapping("/consultar-clientes")
     @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(102))")
     public ResponseEntity<GenericResponseDTO> consultarClientes() {
-        return GenericResponseDTO.genericResponse(clienteService.allClientes());
+        return GenericResponseDTO.genericResponse(clienteService.consultarTodos());
     }
 
     @GetMapping("/consultar-cliente-por-cedula/{cedula}")

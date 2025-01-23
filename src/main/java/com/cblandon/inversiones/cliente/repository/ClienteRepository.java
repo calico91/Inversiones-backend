@@ -1,5 +1,7 @@
 package com.cblandon.inversiones.cliente.repository;
 
+import com.cblandon.inversiones.cliente.dto.ClienteRespuestaDTO;
+import com.cblandon.inversiones.cliente.dto.ClientesRespuestaDTO;
 import com.cblandon.inversiones.cliente.dto.ClientesCuotaCreditoDTO;
 import com.cblandon.inversiones.cliente.entity.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +15,9 @@ import java.util.Optional;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
-
-    Optional<Cliente> findByCedula(String cedula);
+    @Query(value = "SELECT new com.cblandon.inversiones.cliente.dto.ClienteRespuestaDTO(c.id, c.nombres, " +
+            "c.apellidos, c.celular, c.cedula, c.direccion, c.observaciones) FROM Cliente c WHERE c.cedula = :cedula")
+    Optional<ClienteRespuestaDTO> findByCedula(String cedula);
 
 
     @Query(value = "SELECT new com.cblandon.inversiones.cliente.dto.ClientesCuotaCreditoDTO(" +
@@ -28,5 +31,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
             "AND ccr.fechaCuota <= :fechaFiltro ORDER BY ccr.fechaCuota ASC")
     List<ClientesCuotaCreditoDTO> consultarClientesCuotasPendientes(
             @Param("fechaFiltro") LocalDate fechaFiltro, @Param("idUsuario") int idUsuario);
+
+    @Query(value = "SELECT new com.cblandon.inversiones.cliente.dto.ClientesRespuestaDTO(c.id, c.nombres, " +
+            "c.apellidos, c.cedula) FROM Cliente c ORDER BY c.id DESC ")
+    List<ClientesRespuestaDTO> consultarTodos();
 
 }
