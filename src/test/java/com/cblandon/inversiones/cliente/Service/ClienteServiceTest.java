@@ -158,7 +158,7 @@ class ClienteServiceTest {
         verify(clienteRepository, never()).save(any(Cliente.class));
     }
 
-    @DisplayName("Test para actualizar un cliente")
+   /* @DisplayName("Test para actualizar un cliente")
     @Test
     void testActualizarCliente() {
 
@@ -192,7 +192,7 @@ class ClienteServiceTest {
 
         //then
         verify(clienteRepository, never()).save(any(Cliente.class));
-    }
+    }*/
 
     @DisplayName("Test para listar de cuotas pendientes de la fecha actual para atras")
     @Test

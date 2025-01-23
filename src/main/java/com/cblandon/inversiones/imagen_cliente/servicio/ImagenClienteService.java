@@ -73,7 +73,7 @@ public class ImagenClienteService {
         try {
 
             imagenClienteRepository.deleteByClienteId(clienteId);
-            imagenClienteRepository.saveAll(procesarImagenes(imagenes, cliente));
+            imagenClienteRepository.saveAll(procesarImagenes(imagenes, cliente, true));
 
             return "Imagenes almacenadas correctamente";
 
@@ -85,12 +85,17 @@ public class ImagenClienteService {
     }
 
 
-    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente)
+    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente, Boolean estaEditando)
             throws IOException, RequestException {
 
         if (imagenes != null && imagenes.size() > 6) {
             throw new RequestException(MensajesErrorEnum.CANTIDAD_IMAGENES_NO_VALIDA);
         }
+
+        if (estaEditando) {
+            imagenClienteRepository.deleteByClienteId(cliente.getId());
+        }
+
 
         List<ImagenCliente> imagenesCliente = new ArrayList<>();
         if (imagenes != null && !imagenes.isEmpty()) {

@@ -44,7 +44,7 @@ public class ClienteService {
             Cliente cliente = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             cliente.setUsuariocreador(UtilsMetodos.obtenerUsuarioLogueado());
 
-            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes, cliente);
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes, cliente, false);
             cliente.setImagenes(imagenesProcesadas);
 
             return Mapper.mapper.clienteToClienteResponseDto(clienteRepository.save(cliente));
@@ -91,7 +91,8 @@ public class ClienteService {
     }
 
     @Transactional
-    public ClienteResponseDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO) {
+    public ClienteResponseDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO,
+                                                List<MultipartFile> imagenes) {
 
         Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
@@ -100,6 +101,9 @@ public class ClienteService {
 
             Cliente clienteModificado = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             clienteModificado.setId(clienteBD.getId());
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(
+                    imagenes, clienteModificado, true);
+            clienteModificado.setImagenes(imagenesProcesadas);
             clienteModificado.setUsuariomodificador(UtilsMetodos.obtenerUsuarioLogueado());
             clienteModificado.setUsuariocreador(clienteBD.getUsuariocreador());
             clienteModificado.setFechacreacion(clienteBD.getFechacreacion());
@@ -108,6 +112,8 @@ public class ClienteService {
 
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
 

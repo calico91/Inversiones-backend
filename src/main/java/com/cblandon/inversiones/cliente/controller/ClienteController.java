@@ -26,6 +26,7 @@ public class ClienteController {
 
     private final ClienteService clienteService;
     private final Validator validator;
+    ObjectMapper objectMapper = new ObjectMapper();
 
 
     @PostMapping("/registrar-cliente")
@@ -34,18 +35,8 @@ public class ClienteController {
             @RequestPart("cliente") String clienteJson,  // Recibimos el JSON como String
             @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws JsonProcessingException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
         RegistrarClienteDTO registrarClienteDTO = objectMapper.readValue(clienteJson, RegistrarClienteDTO.class);
-
-        // Validar manualmente despues de convertir el string a objeto
-        Set<ConstraintViolation<RegistrarClienteDTO>> violations = validator.validate(registrarClienteDTO);
-        if (!violations.isEmpty()) {
-            String errores = violations.stream()
-                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
-                    .reduce((e1, e2) -> e1 + ", " + e2)
-                    .orElse("Error de validación");
-            return GenericResponseDTO.formResponseError(errores, HttpStatus.NOT_FOUND);
-        }
+        validarFormulario(registrarClienteDTO);
 
         return GenericResponseDTO.genericResponse(clienteService.registrarCliente(registrarClienteDTO, imagenes));
     }
@@ -75,9 +66,14 @@ public class ClienteController {
     @PutMapping("/actualizar-cliente/{id}")
     @PreAuthorize("hasAnyRole(@rolesService.consultarPermisoRoles(104))")
     public ResponseEntity<GenericResponseDTO> actualizarCliente(
-            @PathVariable Integer id, @Valid @RequestBody RegistrarClienteDTO registrarClienteDTO) {
+            @PathVariable Integer id,
+            @RequestPart("cliente") String clienteJson,  // Recibimos el JSON como String
+            @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws JsonProcessingException {
 
-        return GenericResponseDTO.genericResponse(clienteService.actualizarCliente(id, registrarClienteDTO));
+        RegistrarClienteDTO registrarClienteDTO = objectMapper.readValue(clienteJson, RegistrarClienteDTO.class);
+        validarFormulario(registrarClienteDTO);
+
+        return GenericResponseDTO.genericResponse(clienteService.actualizarCliente(id, registrarClienteDTO, imagenes));
     }
 
     @DeleteMapping("/eliminarCliente/{idCliente}")
@@ -85,5 +81,19 @@ public class ClienteController {
     public ResponseEntity<String> eliminarCliente(@PathVariable int idCliente) {
         clienteService.deleteCliente(idCliente);
         return new ResponseEntity<>("Empleado eliminado exitosamente", HttpStatus.OK);
+    }
+
+    private ResponseEntity<GenericResponseDTO> validarFormulario(RegistrarClienteDTO registrarClienteDTO) {
+
+        // Validar manualmente despues de convertir el string a objeto
+        Set<ConstraintViolation<RegistrarClienteDTO>> violations = validator.validate(registrarClienteDTO);
+        if (!violations.isEmpty()) {
+            String errores = violations.stream()
+                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                    .reduce((e1, e2) -> e1 + ", " + e2)
+                    .orElse("Error de validación");
+            return GenericResponseDTO.formResponseError(errores, HttpStatus.NOT_FOUND);
+        }
+        return null;
     }
 }
