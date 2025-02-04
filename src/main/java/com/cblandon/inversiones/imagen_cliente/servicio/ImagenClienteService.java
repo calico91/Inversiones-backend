@@ -9,6 +9,8 @@ import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
 import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.util.MultipartFileCustom;
 import com.cblandon.inversiones.utils.MensajesErrorEnum;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.awt.image.BufferedImage;
@@ -24,6 +29,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifDirectoryBase;
+
 
 @Service
 @Slf4j
@@ -62,7 +73,7 @@ public class ImagenClienteService {
         try {
 
             imagenClienteRepository.deleteByClienteId(clienteId);
-            imagenClienteRepository.saveAll(procesarImagenes(imagenes, cliente));
+            imagenClienteRepository.saveAll(procesarImagenes(imagenes, cliente, true));
 
             return "Imagenes almacenadas correctamente";
 
@@ -74,13 +85,18 @@ public class ImagenClienteService {
     }
 
 
-    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente)
+    public List<ImagenCliente> procesarImagenes(List<MultipartFile> imagenes, Cliente cliente, boolean estaEditando)
             throws IOException, RequestException {
 
         if (imagenes != null && imagenes.size() > 6) {
             throw new RequestException(MensajesErrorEnum.CANTIDAD_IMAGENES_NO_VALIDA);
         }
-        
+
+        if (estaEditando) {
+            imagenClienteRepository.deleteByClienteId(cliente.getId());
+        }
+
+
         List<ImagenCliente> imagenesCliente = new ArrayList<>();
         if (imagenes != null && !imagenes.isEmpty()) {
             for (MultipartFile imagen : imagenes) {
@@ -106,6 +122,20 @@ public class ImagenClienteService {
     private MultipartFile reducirPesoImagen(MultipartFile imagen) throws IOException {
         BufferedImage originalImage = ImageIO.read(imagen.getInputStream());
 
+        // Ajustar orientación
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(imagen.getInputStream());
+            ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            if (directory != null && directory.containsTag(ExifDirectoryBase.TAG_ORIENTATION)) {
+                int orientation = directory.getInt(ExifDirectoryBase.TAG_ORIENTATION);
+                originalImage = validarOrientacion(originalImage, orientation);
+            }
+        } catch (RuntimeException e) {
+            throw new RemoteException(e.getMessage()); // Manejo de excepciones
+        } catch (ImageProcessingException | MetadataException e) {
+            throw new RuntimeException(e);
+        }
+
         // Redimensionar la imagen (opcional)
         int ancho = originalImage.getWidth();
         int alto = originalImage.getHeight();
@@ -123,6 +153,50 @@ public class ImagenClienteService {
         ImageIO.write(bufferedResizedImage, "jpg", outputStream);
 
         return new MultipartFileCustom(imagen.getOriginalFilename(), outputStream.toByteArray());
+    }
+
+    private BufferedImage validarOrientacion(BufferedImage image, int orientation) {
+        AffineTransform transform = new AffineTransform();
+
+        switch (orientation) {
+            case 1: // Normal
+                return image;
+            case 2: // Flip Y
+                transform.scale(-1, 1);
+                transform.translate(-image.getWidth(), 0);
+                break;
+            case 3: // Rotate 180 degrees
+                transform.translate(image.getWidth(), image.getHeight());
+                transform.rotate(Math.PI);
+                break;
+            case 4: // Flip X
+                transform.scale(1, -1);
+                transform.translate(0, -image.getHeight());
+                break;
+            case 5: // -90 degrees and Flip X
+                transform.rotate(-Math.PI / 2);
+                transform.scale(1, -1);
+                break;
+            case 6: // Rotate 90 degrees
+                transform.translate(image.getHeight(), 0);
+                transform.rotate(Math.PI / 2);
+                break;
+            case 7: // 90 degrees and Flip X
+                transform.scale(-1, 1);
+                transform.translate(-image.getHeight(), 0);
+                transform.translate(0, image.getWidth());
+                transform.rotate(3 * Math.PI / 2);
+                break;
+            case 8: // Rotate -90 degrees
+                transform.translate(0, image.getWidth());
+                transform.rotate(-Math.PI / 2);
+                break;
+            default:
+                return image;
+        }
+
+        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+        return op.filter(image, null);
     }
 
     private String convertirABase64(MultipartFile imagen) throws IOException {

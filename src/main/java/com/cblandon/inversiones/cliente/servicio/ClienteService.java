@@ -1,7 +1,7 @@
 package com.cblandon.inversiones.cliente.servicio;
 
-import com.cblandon.inversiones.cliente.dto.ClienteAllResponseDTO;
-import com.cblandon.inversiones.cliente.dto.ClienteResponseDTO;
+import com.cblandon.inversiones.cliente.dto.ClientesRespuestaDTO;
+import com.cblandon.inversiones.cliente.dto.ClienteRespuestaDTO;
 import com.cblandon.inversiones.cliente.dto.ClientesCuotaCreditoDTO;
 import com.cblandon.inversiones.cliente.dto.RegistrarClienteDTO;
 import com.cblandon.inversiones.cliente.entity.Cliente;
@@ -9,13 +9,13 @@ import com.cblandon.inversiones.cliente.repository.ClienteRepository;
 import com.cblandon.inversiones.excepciones.NoDataException;
 import com.cblandon.inversiones.excepciones.RequestException;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
+import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.servicio.ImagenClienteService;
 import com.cblandon.inversiones.mapper.Mapper;
 import com.cblandon.inversiones.utils.MensajesErrorEnum;
 import com.cblandon.inversiones.utils.UtilsMetodos;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,10 +31,11 @@ public class ClienteService {
 
     private final ClienteRepository clienteRepository;
     private final ImagenClienteService imagenClienteService;
+    private final ImagenClienteRepository imagenClienteRepository;
 
 
     @Transactional
-    public ClienteResponseDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO, List<MultipartFile> imagenes) {
+    public ClienteRespuestaDTO registrarCliente(RegistrarClienteDTO registrarClienteDTO, List<MultipartFile> imagenes) {
 
         if (clienteRepository.findByCedula(registrarClienteDTO.cedula()).isPresent()) {
             throw new RequestException(
@@ -44,7 +45,7 @@ public class ClienteService {
             Cliente cliente = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             cliente.setUsuariocreador(UtilsMetodos.obtenerUsuarioLogueado());
 
-            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes, cliente);
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(imagenes, cliente, false);
             cliente.setImagenes(imagenesProcesadas);
 
             return Mapper.mapper.clienteToClienteResponseDto(clienteRepository.save(cliente));
@@ -58,13 +59,10 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClienteAllResponseDTO> allClientes() {
+    public List<ClientesRespuestaDTO> consultarTodos() {
         try {
 
-            List<Cliente> clientes = clienteRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-            return clientes.stream().map(
-                    Mapper.mapper::clienteToClienteAllResponseDto).toList();
+            return clienteRepository.consultarTodos();
 
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
@@ -73,25 +71,15 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClienteResponseDTO consultarCliente(String cedula) {
+    public ClienteRespuestaDTO consultarCliente(String cedula) {
 
-        Cliente clienteBD = clienteRepository.findByCedula(cedula).orElseThrow(
+        return clienteRepository.findByCedula(cedula).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
-
-        try {
-
-            return Mapper.mapper.clienteToClienteResponseDto(clienteBD);
-
-        } catch (RuntimeException ex) {
-
-            throw new RuntimeException(ex.getMessage());
-        }
-
-
     }
 
     @Transactional
-    public ClienteResponseDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO) {
+    public ClienteRespuestaDTO actualizarCliente(Integer id, RegistrarClienteDTO registrarClienteDTO,
+                                                 List<MultipartFile> imagenes) {
 
         Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
@@ -100,6 +88,9 @@ public class ClienteService {
 
             Cliente clienteModificado = Mapper.mapper.registrarClienteDTOToCliente(registrarClienteDTO);
             clienteModificado.setId(clienteBD.getId());
+            List<ImagenCliente> imagenesProcesadas = imagenClienteService.procesarImagenes(
+                    imagenes, clienteModificado, true);
+            clienteModificado.setImagenes(imagenesProcesadas);
             clienteModificado.setUsuariomodificador(UtilsMetodos.obtenerUsuarioLogueado());
             clienteModificado.setUsuariocreador(clienteBD.getUsuariocreador());
             clienteModificado.setFechacreacion(clienteBD.getFechacreacion());
@@ -108,6 +99,8 @@ public class ClienteService {
 
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
 
@@ -122,7 +115,6 @@ public class ClienteService {
 
     }
 
-
     /**
      * lista de cuotas pendientes de la fecha seleccionada para atras
      */
@@ -135,6 +127,26 @@ public class ClienteService {
         } catch (RuntimeException ex) {
             throw new RuntimeException(ex.getMessage());
         }
+
+    }
+
+    @Transactional(readOnly = true)
+    public ClienteRespuestaDTO consultarClientePorIdImagenes(Integer id) {
+
+        Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
+                () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
+
+        List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(id);
+
+        try {
+            clienteBD.setImagenes(imagenes);
+            return Mapper.mapper.clienteToClienteResponseDto(clienteBD);
+
+        } catch (RuntimeException ex) {
+
+            throw new RuntimeException(ex.getMessage());
+        }
+
 
     }
 }
