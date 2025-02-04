@@ -1,0 +1,49 @@
+server:
+  port: 8091
+
+jwt:
+  secret:
+    key: 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294A
+  user:
+    generator: tokencode
+#logs
+logging:
+  file:
+    name: D:/Spring/ProjectoInversion/logs/inversiones.log
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  datasource:
+    password: admin
+    url: jdbc:mysql://localhost:3306/blandon
+    username: root
+  #zona horaria
+  jackson:
+    time-zone: America/Bogota
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+#Swagger
+springdoc:
+  api-docs:
+    # habilitar/deshabilitar api-docs/swagger
+    enabled: true
+  pathsToMatch: /cliente/**,/credito/**
+  swagger-ui:
+    #definir ruta de swagger
+    path: /doc/swagger-ui.html
+    enabled: true
+  #seleccionar paquetes, clases a escanear
+  packagesToscan: com.cblandon.inversiones.credito
