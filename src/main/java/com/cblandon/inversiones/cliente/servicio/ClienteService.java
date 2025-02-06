@@ -8,6 +8,7 @@ import com.cblandon.inversiones.cliente.entity.Cliente;
 import com.cblandon.inversiones.cliente.repository.ClienteRepository;
 import com.cblandon.inversiones.excepciones.NoDataException;
 import com.cblandon.inversiones.excepciones.RequestException;
+import com.cblandon.inversiones.imagen_cliente.dto.ImagenDTO;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
 import com.cblandon.inversiones.imagen_cliente.repository.ImagenClienteRepository;
 import com.cblandon.inversiones.imagen_cliente.servicio.ImagenClienteService;
@@ -136,11 +137,13 @@ public class ClienteService {
         Cliente clienteBD = clienteRepository.findById(id).orElseThrow(
                 () -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
 
-        List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(id);
+        List<ImagenDTO> imagenes = imagenClienteRepository.findByClienteId(id);
 
         try {
-            clienteBD.setImagenes(imagenes);
-            return Mapper.mapper.clienteToClienteResponseDto(clienteBD);
+            ClienteRespuestaDTO clienteRespuestaDTO = Mapper.mapper.clienteToClienteResponseDto(clienteBD);
+            clienteRespuestaDTO.setImagenes(imagenes);
+
+            return clienteRespuestaDTO;
 
         } catch (RuntimeException ex) {
 

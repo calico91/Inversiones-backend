@@ -22,9 +22,9 @@ public class ImagenCliente {
     @Column(length = 20)
     private String extension;
 
-    @Lob // Indica que es un campo grande
-    @Column(nullable = false, columnDefinition = "MEDIUMTEXT", name = "base64_data")
-    private String base64Data;
+    @Lob // inidica que es un campo grande en la bd
+    @Column(nullable = false, columnDefinition = "LONGBLOB", name = "base64_data")
+    private byte[] base64Data;
 
     @ManyToOne(targetEntity = Cliente.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente")

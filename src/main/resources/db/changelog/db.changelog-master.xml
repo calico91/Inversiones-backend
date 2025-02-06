@@ -9,5 +9,6 @@
     <include file="db/changelog/agregar-tabla-imagen-cliente.sql"/>
     <include file="db/changelog/modificacion-imagenes-cliente.sql"/>
     <include file="db/changelog/modificacion-imagenes-cliente-2.sql"/>
+    <include file="db/changelog/modificacion-imagenes-cliente-campo-base64.sql"/>
 
 </databaseChangeLog>

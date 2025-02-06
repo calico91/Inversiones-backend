@@ -6,6 +6,7 @@ import com.cblandon.inversiones.cliente.dto.ClienteRespuestaDTO;
 import com.cblandon.inversiones.cliente.dto.RegistrarClienteDTO;
 import com.cblandon.inversiones.imagen_cliente.mapper.ImagenClienteMapper;
 import com.cblandon.inversiones.user.entity.UserEntity;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @org.mapstruct.Mapper(uses = {CreditoMapper.class, UserEntity.class, ImagenClienteMapper.class})
@@ -13,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 public interface Mapper {
 
     Mapper mapper = Mappers.getMapper(Mapper.class);
-
+    @Mapping(target = "imagenes", ignore = true)
     ClienteRespuestaDTO clienteToClienteResponseDto(Cliente cliente);
 
     ClientesRespuestaDTO clienteToClienteAllResponseDto(Cliente cliente);

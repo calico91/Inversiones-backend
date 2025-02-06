@@ -1,6 +1,7 @@
 package com.cblandon.inversiones.cliente.dto;
 
 import com.cblandon.inversiones.credito.dto.CreditoResponseDTO;
+import com.cblandon.inversiones.imagen_cliente.dto.ImagenDTO;
 import com.cblandon.inversiones.imagen_cliente.entity.ImagenCliente;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class ClienteRespuestaDTO {
     String direccion;
     String observaciones;
     List<CreditoResponseDTO> listaCreditos;
-    List<ImagenCliente> imagenes;
+    List<ImagenDTO> imagenes;
 
     public ClienteRespuestaDTO(Integer id, String nombres, String apellidos, String celular, String cedula,
                                String direccion, String observaciones) {
