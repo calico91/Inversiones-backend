@@ -47,21 +47,13 @@ public class ImagenClienteService {
     @Transactional(readOnly = true)
     public List<ImagenDTO> obtenerImagenes(Integer clienteId) {
 
-        List<ImagenCliente> imagenes = imagenClienteRepository.findByClienteId(clienteId);
+        List<ImagenDTO> imagenes = imagenClienteRepository.findByClienteId(clienteId);
 
         if (imagenes.isEmpty()) {
-            throw new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS);
+            throw new NoDataException(MensajesErrorEnum.CLIENTE_SIN_IMAGENES);
         }
 
-        List<ImagenDTO> imagenesDecodificadas = new ArrayList<>();
-        for (ImagenCliente imagen : imagenes) {
-            byte[] decodedImage = decodeBase64(imagen.getBase64Data());
-            ImagenDTO dto = new ImagenDTO(decodedImage, imagen.getExtension());
-
-            imagenesDecodificadas.add(dto);
-        }
-
-        return imagenesDecodificadas;
+        return imagenes;
     }
 
     @Transactional
@@ -109,7 +101,7 @@ public class ImagenClienteService {
                     imagen = reducirPesoImagen(imagen);
                 }
                 imagenesCliente.add(ImagenCliente.builder()
-                        .base64Data(convertirABase64(imagen))
+                        .base64Data(imagen.getBytes())
                         .extension(extension)
                         .cliente(cliente)
                         .build());
