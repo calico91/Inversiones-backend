@@ -1,11 +1,5 @@
 server:
   port: 8091
-  undertow:
-    buffer-size: 512    # Buffer más pequeño (menos memoria usada)
-    direct-buffers: false
-    threads:
-      worker: 10 # solo 10 peticiones al tiempo
-      io: 2  # Mínimo de hilos de entrada/salida (I/O)
 
 jwt:
   secret:
