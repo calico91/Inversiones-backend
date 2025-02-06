@@ -1,3 +1,11 @@
+server:
+  undertow:
+    buffer-size: 512    # Buffer más pequeño (menos memoria usada)
+    direct-buffers: false
+    threads:
+      worker: 10 # solo 10 peticiones al tiempo
+      io: 2  # Mínimo de hilos de entrada/salida (I/O)
+
 jwt:
   secret:
     key: 76397924423F4528482B4D6251655468576D5A7134743777217A25432A46294A
