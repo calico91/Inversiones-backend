@@ -49,5 +49,7 @@ public class InfoCreditoySaldoResponseDTO {
 
     private String modalidad;
 
+    private double saldoCapital;
+
 
 }

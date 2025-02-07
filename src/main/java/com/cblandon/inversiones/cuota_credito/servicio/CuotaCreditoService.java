@@ -258,6 +258,7 @@ public class CuotaCreditoService {
                             .tipoAbono(Optional.ofNullable((String) cuota.get("tipo_abono")).orElse("CP"))
                             .abonoExtra(Optional.ofNullable((Boolean) cuota.get("abono_extra")).orElse(false))
                             .modalidad(cuota.get("modalidad").toString())
+                            .saldoCapital(Double.parseDouble(cuota.get("saldo_credito").toString()))
                             .saldoCredito(Double.parseDouble(cuota.get("saldo_credito").toString()))
                             .build()).toList();
 
