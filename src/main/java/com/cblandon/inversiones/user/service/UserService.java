@@ -17,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,28 +28,11 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
-
-    final JwtUtils jwtUtils;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe."));
-
-
-        return new User(userEntity.getUsername(),
-                userEntity.getPassword(),
-                true,
-                true,
-                true,
-                true,
-                getAuthorities(userEntity.getRoles()));
-    }
 
     @Transactional
     public UsuariosResponseDTO registrar(UserDTO userDTO) throws RequestException {

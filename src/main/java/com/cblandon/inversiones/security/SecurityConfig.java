@@ -1,10 +1,10 @@
 package com.cblandon.inversiones.security;
 
 
+import com.cblandon.inversiones.config.tenat.TenantInterceptor;
 import com.cblandon.inversiones.security.filters.JwtTokenValidator;
 import com.cblandon.inversiones.security.jwt.JwtUtils;
-import com.cblandon.inversiones.user.repository.UserRepository;
-import com.cblandon.inversiones.user.service.UserService;
+import com.cblandon.inversiones.user.service.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -31,10 +33,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
-
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final UserRepository userRepository;
-
+    private final TenantInterceptor tenantInterceptor;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -50,7 +50,7 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/autenticacion/login").permitAll();
                     http.anyRequest().authenticated();
                 })
-                .addFilterBefore(new JwtTokenValidator(jwtUtils, handlerExceptionResolver, userRepository),
+                .addFilterBefore(new JwtTokenValidator(jwtUtils, handlerExceptionResolver),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -61,7 +61,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserService userDetailService) {
+    public AuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailService);
@@ -73,8 +73,19 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    // Método para registrar el TenantInterceptor
+    @Bean
+    public WebMvcConfigurer webMvcConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(tenantInterceptor);
+            }
+        };
+    }
 }
+
+
 
 
 

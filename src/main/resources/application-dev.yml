@@ -12,6 +12,8 @@ logging:
     name: D:/Spring/ProjectoInversion/logs/inversiones.log
 
 spring:
+  main:
+    allow-circular-references: true
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
@@ -47,3 +49,8 @@ springdoc:
     enabled: true
   #seleccionar paquetes, clases a escanear
   packagesToscan: com.cblandon.inversiones.credito
+
+clientes:
+  databases:
+    blandon: "jdbc:mysql://localhost:3306/blandon"
+    cliente_2: "jdbc:mysql://host2:3306/db_cliente2"

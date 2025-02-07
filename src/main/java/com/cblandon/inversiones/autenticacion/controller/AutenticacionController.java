@@ -7,6 +7,7 @@ import com.cblandon.inversiones.autenticacion.dto.RegistrarDispositivoDTO;
 import com.cblandon.inversiones.utils.dto.GenericResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/autenticacion")
 @Slf4j
 public class AutenticacionController {
-
+    @Lazy
     private final AutenticacionService autenticacionService;
 
     @PostMapping(value = "login")
