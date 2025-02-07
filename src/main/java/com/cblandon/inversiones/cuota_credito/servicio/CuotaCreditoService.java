@@ -44,10 +44,10 @@ public class CuotaCreditoService {
 
     /// pagar cuota normal,solo interes o solo capital
     @Transactional
-    public Map<String, Object> pagarCuota(
+    public PagarCuotaResponseDTO pagarCuota(
             Integer codigoCuota, PagarCuotaRequestDTO pagarCuotaRequestDTO)
             throws NoDataException {
-
+        PagarCuotaResponseDTO pagarCuotaResponseDTO = new PagarCuotaResponseDTO();
 
         CuotaCredito cuotaCreditoDB = cuotaCreditoRepository.findById(codigoCuota)
                 .orElseThrow(() -> new NoDataException(MensajesErrorEnum.DATOS_NO_ENCONTRADOS));
@@ -73,7 +73,7 @@ public class CuotaCreditoService {
                 }
 
                 case Constantes.ABONO_CAPITAL -> {
-                    /// si el credito se paga en su totalidad, se separa el interes del capital
+                    // si el credito se paga en su totalidad, se separa el interes del capital
                     if (pagarCuotaRequestDTO.getEstadoCredito().equals(Constantes.CREDITO_PAGADO)) {
                         cuotaCreditoDB.setValorInteres(pagarCuotaRequestDTO.getValorInteres());
                         cuotaCreditoDB.setValorCapital(
@@ -163,21 +163,21 @@ public class CuotaCreditoService {
                 credito.setIdEstadoCredito(new EstadoCredito(Constantes.ID_CREDITO_PAGADO, null));
                 creditoRepository.save(credito);
 
-                mapRespuesta.put("estadoCredito", "Credito pagado en su totalidad");
             }
-            mapRespuesta.put("estadoCuota", "Cuota cancelada correctamente");
-            mapRespuesta.put("cantidadCuotas", cuotaCreditoDB.getNumeroCuotas());
-            mapRespuesta.put("valorAbonado", pagarCuotaRequestDTO.getValorAbonado());
-            mapRespuesta.put("tipoAbono", pagarCuotaRequestDTO.getTipoAbono());
+            pagarCuotaResponseDTO.setCantidadCuotas(cuotaCreditoDB.getNumeroCuotas());
+            pagarCuotaResponseDTO.setValorAbonado(cuotaCreditoDB.getValorAbonado());
+            pagarCuotaResponseDTO.setTipoAbono(cuotaCreditoDB.getTipoAbono());
+            pagarCuotaResponseDTO.setSaldoCapital(cuotaCancelada.getCredito().getSaldoCredito());
+
 
             if (pagarCuotaRequestDTO.getTipoAbono().equals(Constantes.SOLO_INTERES) ||
                     pagarCuotaRequestDTO.getTipoAbono().equals(Constantes.ABONO_CAPITAL)) {
-                mapRespuesta.put("cuotasPagadas", cuotaCreditoDB.getCuotaNumero() - 1);
+                pagarCuotaResponseDTO.setCuotasPagadas(cuotaCreditoDB.getCuotaNumero() - 1);
             } else {
-                mapRespuesta.put("cuotasPagadas", cuotaCreditoDB.getCuotaNumero());
+                pagarCuotaResponseDTO.setCuotasPagadas(cuotaCreditoDB.getCuotaNumero());
             }
 
-            return mapRespuesta;
+            return pagarCuotaResponseDTO;
         } catch (RequestException ex) {
             throw ex;
         } catch (RuntimeException ex) {
