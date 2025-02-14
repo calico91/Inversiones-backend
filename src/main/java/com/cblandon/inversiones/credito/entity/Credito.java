@@ -66,6 +66,12 @@ public class Credito {
                     name = "credito_id"), inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     Set<UserEntity> usuarios;
 
+    @Column(name = "dias_mora", nullable = false)
+    private Integer diasMora;
+
+    @Column(name = "valor_mora", nullable = false)
+    private Double valorMora;
+
     @PrePersist
     public void prePersit() {
         this.fechaCredito = this.fechaCredito == null ? LocalDate.now() : this.fechaCredito;

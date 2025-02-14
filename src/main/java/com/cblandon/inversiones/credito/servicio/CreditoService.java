@@ -84,6 +84,8 @@ public class CreditoService {
                     .idEstadoCredito(new EstadoCredito(Constantes.ID_CREDITO_ACTIVO, null))
                     .usuarios(usuarios)
                     .valorRenovacion(registrarCreditoRequestDTO.valorRenovacion())
+                    .diasMora(registrarCreditoRequestDTO.diasMora())
+                    .valorMora(registrarCreditoRequestDTO.valorMora())
                     .build();
             credito = creditoRepository.save(credito);
 

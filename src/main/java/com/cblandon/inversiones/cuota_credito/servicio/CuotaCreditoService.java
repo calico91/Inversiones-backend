@@ -204,10 +204,13 @@ public class CuotaCreditoService {
                     .modalidad(infoConsulta.get("description").toString())
                     .saldoCredito(Double.parseDouble(infoConsulta.get("saldo_credito").toString()))
                     .celular(infoConsulta.get("celular").toString())
+                    .moraDiasBD(Integer.parseInt(infoConsulta.get("dias_mora").toString()))
+                    .valorMora(Double.parseDouble(infoConsulta.get("valor_mora").toString()))
                     .build();
 
 
-            double interesMora = calcularInteresMora(infoCuotaPagar.getFechaCuota());
+            double interesMora = calcularInteresMora(
+                    infoCuotaPagar.getFechaCuota(), infoCuotaPagar.getMoraDiasBD(), infoCuotaPagar.getValorMora());
 
             infoCuotaPagar.setInteresMora(interesMora);
             infoCuotaPagar.setValorInteres(infoCuotaPagar.getValorInteres() + interesMora);
@@ -260,6 +263,8 @@ public class CuotaCreditoService {
                             .modalidad(cuota.get("modalidad").toString())
                             .saldoCapital(Double.parseDouble(cuota.get("saldo_credito").toString()))
                             .saldoCredito(Double.parseDouble(cuota.get("saldo_credito").toString()))
+                            .diasMora(Integer.parseInt(cuota.get("dias_mora").toString()))
+                            .valorMora(Double.parseDouble(cuota.get("valor_mora").toString()))
                             .build()).toList();
 
 
@@ -467,7 +472,8 @@ public class CuotaCreditoService {
                 listaCuotas.get(0).getInteresPorcentaje(),
                 listaCuotas.get(0).getModalidad());
 
-        Double interesMora = calcularInteresMora(listaCuotas.get(0).getFechaCuota());
+        Double interesMora = calcularInteresMora(
+                listaCuotas.get(0).getFechaCuota(), listaCuotas.get(0).getDiasMora(), listaCuotas.get(0).getValorMora());
 
         interesActual = Math.max(interesActual, 0.0);
 
@@ -520,23 +526,25 @@ public class CuotaCreditoService {
     }
 
     /**
-     * por cada tres dias de mora genera un interes de 5 mil pesos,
-     * despues de la primer mora, suma cada 4 dias 5k de mora
+     * se calcula la mora de acuerdo la mora que se configuro en el credito
      */
-    private Double calcularInteresMora(LocalDate fechaCuota) {
+    private Double calcularInteresMora(LocalDate fechaCuota, Integer diasMora, Double valorMora) {
+        System.out.println("dias"+diasMora);
+        System.out.println("valor"+valorMora);
         int diasDiferencia = calcularDiasDiferenciaEntreFechas(fechaCuota, LocalDate.now());
-        fechaProximaMora = fechaCuota.plusDays(4);
+        fechaProximaMora = fechaCuota.plusDays(diasMora);
 
         int diasCobrar = 0;
 
         for (int i = 1; diasDiferencia > 0; diasDiferencia--) {
-            if (i % 4 == 0) {
-                fechaProximaMora = fechaProximaMora.plusDays(4);
+            if (i % diasMora == 0) {
+                fechaProximaMora = fechaProximaMora.plusDays(diasMora);
                 diasCobrar++;
             }
             i++;
         }
-        return Double.parseDouble(Integer.toString(diasCobrar)) * 5000;
+        System.out.println("proxima "+fechaProximaMora);
+        return Double.parseDouble(Integer.toString(diasCobrar)) * valorMora;
     }
 
 

@@ -48,6 +48,10 @@ public class CuotasCreditoResponseDTO {
 
     private String celular;
 
+    private Integer moraDiasBD;
+
+    private Double valorMora;
+
 }
 
 
