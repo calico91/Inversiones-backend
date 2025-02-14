@@ -51,7 +51,7 @@ public class InfoCreditoySaldoResponseDTO {
 
     private double saldoCapital;
 
-    private Integer diasMora;
+    private String diasMora;
 
     private Double valorMora;
 

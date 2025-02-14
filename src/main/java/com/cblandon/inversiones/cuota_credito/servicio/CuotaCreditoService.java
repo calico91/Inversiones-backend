@@ -263,7 +263,7 @@ public class CuotaCreditoService {
                             .modalidad(cuota.get("modalidad").toString())
                             .saldoCapital(Double.parseDouble(cuota.get("saldo_credito").toString()))
                             .saldoCredito(Double.parseDouble(cuota.get("saldo_credito").toString()))
-                            .diasMora(Integer.parseInt(cuota.get("dias_mora").toString()))
+                            .diasMora(cuota.get("dias_mora").toString())
                             .valorMora(Double.parseDouble(cuota.get("valor_mora").toString()))
                             .build()).toList();
 
@@ -473,7 +473,8 @@ public class CuotaCreditoService {
                 listaCuotas.get(0).getModalidad());
 
         Double interesMora = calcularInteresMora(
-                listaCuotas.get(0).getFechaCuota(), listaCuotas.get(0).getDiasMora(), listaCuotas.get(0).getValorMora());
+                listaCuotas.get(0).getFechaCuota(), Integer.parseInt(listaCuotas.get(0).getDiasMora()) ,
+                listaCuotas.get(0).getValorMora());
 
         interesActual = Math.max(interesActual, 0.0);
 
