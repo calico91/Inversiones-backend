@@ -25,6 +25,8 @@ public record RegistrarCreditoRequestDTO(@NotNull(message = Constantes.NOT_NULL)
                                          Double valorCredito,
                                          Modalidad modalidad,
                                          String usuario,
+                                         Integer diasMora,
+                                         Double valorMora,
         /*
          * estos parametros solo se envian si se va a realizar una renovacion de credito
          */
