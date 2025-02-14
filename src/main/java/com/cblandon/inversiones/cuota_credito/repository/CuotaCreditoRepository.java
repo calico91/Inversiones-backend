@@ -16,7 +16,8 @@ public interface CuotaCreditoRepository extends JpaRepository<CuotaCredito, Inte
 
     @Query(value = "     SELECT ccr.id_cuota_credito, ccr.valor_cuota, ccr.fecha_cuota, ccr.numero_cuotas, " +
             "            ccr.valor_capital, ccr.valor_interes,ccr.interes_porcentaje, " +
-            "            ccr.couta_numero, cr.valor_credito, m.description, cr.saldo_credito, cl.celular" +
+            "            ccr.couta_numero, cr.valor_credito, m.description, cr.saldo_credito, cl.celular, " +
+            "            cr.dias_mora, cr.valor_mora" +
             "            FROM credito cr" +
             "            INNER JOIN cliente cl ON cr.id_cliente = cl.id_cliente " +
             "            INNER JOIN  cuota_credito ccr ON cr.id_credito= ccr.id_credito" +
@@ -29,7 +30,7 @@ public interface CuotaCreditoRepository extends JpaRepository<CuotaCredito, Inte
 
     @Query(value = "    SELECT cr.saldo_credito,cr.valor_credito, cr.fecha_credito, m.description AS modalidad," +
             "           ccr.id_cuota_credito,ccr.couta_numero, ccr.fecha_cuota,ccr.interes_porcentaje,ccr.numero_cuotas," +
-            "           ccr.valor_cuota,ccr.valor_interes,ccr.tipo_abono,ccr.abono_extra" +
+            "           ccr.valor_cuota,ccr.valor_interes,ccr.tipo_abono,ccr.abono_extra, cr.dias_mora, cr.valor_mora" +
             "           FROM cuota_credito ccr " +
             "           INNER JOIN credito cr ON cr.id_credito = ccr.id_credito " +
             "           INNER JOIN modalidad m ON m.id_modalidad = cr.id_modalidad" +

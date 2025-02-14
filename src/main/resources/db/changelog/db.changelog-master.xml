@@ -10,5 +10,7 @@
     <include file="db/changelog/modificacion-imagenes-cliente.sql"/>
     <include file="db/changelog/modificacion-imagenes-cliente-2.sql"/>
     <include file="db/changelog/modificacion-imagenes-cliente-campo-base64.sql"/>
+    <include file="db/changelog/modificacion-credito-agregar-campos-mora.sql"/>
+    <include file="db/changelog/actualizacion-credito-registros-mora.sql"/>
 
 </databaseChangeLog>

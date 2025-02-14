@@ -84,6 +84,8 @@ public class CreditoService {
                     .idEstadoCredito(new EstadoCredito(Constantes.ID_CREDITO_ACTIVO, null))
                     .usuarios(usuarios)
                     .valorRenovacion(registrarCreditoRequestDTO.valorRenovacion())
+                    .diasMora(registrarCreditoRequestDTO.diasMora())
+                    .valorMora(registrarCreditoRequestDTO.valorMora())
                     .build();
             credito = creditoRepository.save(credito);
 
@@ -137,6 +139,8 @@ public class CreditoService {
                     .valorCuotas(Double.toString(valorCuotas))
                     .nombreCliente(clienteBD.getNombres() + " " + clienteBD.getApellidos())
                     .modalidad(registrarCreditoRequestDTO.modalidad().getDescription())
+                    .diasMora(registrarCreditoRequestDTO.diasMora().toString())
+                    .valorMora(registrarCreditoRequestDTO.valorMora())
                     .build();
 
         } catch (RuntimeException ex) {
